@@ -167,16 +167,16 @@ def create_dazzle_map(dept_stats_df):
     fig.text(0.5, 0.86, "Volumen estimado de actas no reportadas + inconsistentes por departamento",
              ha="center", fontsize=24, color="#5fa8d3")
 
-    # Leyenda (Lado derecho)
-    cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])
-    cbar = fig.colorbar(p, cax=cbar_ax, orientation="vertical")
+    # Leyenda (Horizontal, abajo a la derecha en espacio blanco)
+    cbar_ax = fig.add_axes([0.55, 0.12, 0.35, 0.02])  # [izq, abajo, ancho, alto]
+    cbar = fig.colorbar(p, cax=cbar_ax, orientation="horizontal")
     cbar.ax.tick_params(labelsize=14)
-    cbar.set_label("Votos No Contados Estimados", fontsize=16, fontweight="bold", labelpad=15)
+    cbar.set_label("Votos No Contados Estimados", fontsize=16, fontweight="bold", labelpad=12)
 
     add_branding(fig, logo, f"Fuente: Datos TREP {TIMESTAMP} | {ASSUMPTION_TEXT}")
 
     out_path = VIZ_DIR / "mapa_votos_faltantes.png"
-    plt.tight_layout(rect=[0, 0.06, 0.90, 0.85])
+    plt.tight_layout(rect=[0, 0.06, 1, 0.85])
     plt.savefig(out_path, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print(f"Guardado: {out_path}")
@@ -221,23 +221,24 @@ def create_dazzle_dept_bars(dept_stats_df):
     for i, (rep, rem) in enumerate(zip(reported, remaining)):
         total = rep + rem
 
-        # Etiqueta Reportado
+        # Etiqueta Reportado (con contorno para visibilidad)
         rep_text = f"{rep/1000:.0f}K"
         if rep > (total * 0.15):
-            ax.text(rep/2, i, rep_text, ha="center", va="center",
-                    color="white", fontsize=20, fontweight="bold")
+            text = ax.text(rep/2, i, rep_text, ha="center", va="center",
+                    color="white", fontsize=22, fontweight="bold")
+            text.set_path_effects([path_effects.withStroke(linewidth=3, foreground='#1a5276')])
 
-        # Etiqueta Restante
+        # Etiqueta Restante (con mejor contraste)
         rem_text = f"Est.\n{rem/1000:.0f}K"
         label_color = COLOR_REPORTED
 
         if rem > (total * 0.15):
             ax.text(rep + rem/2, i, rem_text, ha="center", va="center",
-                    color=label_color, fontsize=20, fontweight="bold",
-                    bbox=dict(facecolor="white", alpha=0.85, edgecolor="none", pad=2))
+                    color=label_color, fontsize=22, fontweight="bold",
+                    bbox=dict(facecolor="white", alpha=0.95, edgecolor="none", pad=4))
         else:
             ax.text(rep + rem + (total*0.01), i, rem_text.replace("\n", " "), ha="left", va="center",
-                    color=label_color, fontsize=22, fontweight="bold")
+                    color=label_color, fontsize=24, fontweight="bold")
 
     # Título (Centrado)
     fig.text(0.5, 0.94, "Estado del Voto Departamental: Reportado vs. Estimado",
@@ -308,26 +309,28 @@ def create_dazzle_projection(results_df, dept_stats_df):
 
         # --- ETIQUETAS ---
         ax.text(0, i + (height/2) + 0.05, row["short_name"].upper(),
-                fontsize=24, fontweight="bold", color=row["color"], va="bottom")
+                fontsize=26, fontweight="bold", color=row["color"], va="bottom")
 
-        ax.text(row["reported"] / 2, i, format_number(row["reported"]),
-                ha="center", va="center", color="white", fontsize=24, fontweight="bold")
+        # Etiqueta de reportado con contorno para mejor visibilidad
+        text_rep = ax.text(row["reported"] / 2, i, format_number(row["reported"]),
+                ha="center", va="center", color="white", fontsize=26, fontweight="bold")
+        text_rep.set_path_effects([path_effects.withStroke(linewidth=4, foreground='black', alpha=0.5)])
 
         center_est = row["reported"] + (est_val / 2)
         est_label = f"Est. {est_val/1000:.0f}K\n(±0.4%)"
 
         if est_val < 100000:
             ax.text(row["projected"] + 10000, i, est_label.replace("\n", " "),
-                    ha="left", va="center", color=row["color"], fontsize=18, fontweight="bold")
+                    ha="left", va="center", color=row["color"], fontsize=20, fontweight="bold")
         else:
             ax.text(center_est, i, est_label,
-                    ha="center", va="center", color=row["color"], fontsize=16, fontweight="bold",
-                    bbox=dict(facecolor="white", alpha=0.8, edgecolor="none", pad=2))
+                    ha="center", va="center", color=row["color"], fontsize=18, fontweight="bold",
+                    bbox=dict(facecolor="white", alpha=0.95, edgecolor="none", pad=5))
 
         total_share = (row["projected"] / df["projected"].sum()) * 100
         if est_val >= 100000:
             ax.text(row["projected"] + 25000, i, f"{total_share:.1f}%",
-                    ha="left", va="center", color=row["color"], fontsize=24, fontweight="bold")
+                    ha="left", va="center", color=row["color"], fontsize=26, fontweight="bold")
 
     ax.set_yticks([])
     ax.spines['left'].set_visible(False)
