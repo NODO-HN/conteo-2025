@@ -19,7 +19,7 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 2. **Visualizar la distribución geográfica**: ¿De dónde provienen los votos faltantes?
 3. **Proyectar resultados bajo supuestos explícitos**: ¿Qué pasaría si las actas restantes siguen los patrones observados?
 
-**Hallazgo clave**: Al momento de este análisis (5 de diciembre 2025, 6:00 pm), aproximadamente **25% del electorado** está representado por actas no reportadas o inconsistentes. El margen entre los dos candidatos líderes es de ~20,000 votos, pero el volumen de votos estimados en actas pendientes es de ~700,000.
+**Hallazgo clave**: Al momento de este análisis (5 de diciembre 2025, 6:00 pm), aproximadamente **25% del electorado** está representado por actas no reportadas o inconsistentes. El margen entre los dos candidatos líderes es de ~20,000 votos y el volumen de votos estimados en actas pendientes es de ~700,000.
 
 ---
 
@@ -56,7 +56,7 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 
 ### Limitaciones Explícitas
 
-1. **El margen de error estadístico (±0.4%) NO captura el riesgo de sesgo sistemático.** Si las actas faltantes provienen de zonas con preferencias políticas distintas a las ya contadas, la proyección será incorrecta.
+1. **El riesgo principal es el sesgo sistemático, no el error de muestreo.** Si las actas ya contadas no son representativas de las actas faltantes + las que tienen inconsistencias, la proyección será incorrecta. Sin embargo, las actas contadas y válidas ya superan el 75%, haciendo la muestra altamente representativa.
 
 2. **No hay validación histórica.** Este análisis no ha sido probado contra elecciones anteriores donde se conocen los resultados finales.
 
@@ -70,19 +70,11 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 
 ---
 
-## Metodología Estadística
+## Metodología
 
-### Enfoque: Muestreo Aleatorio Estratificado con Corrección de Población Finita
+### Enfoque: Proyección Proporcional por Departamento
 
-Tratamos cada departamento como un estrato. La varianza del total proyectado se calcula como:
-
-$$Var(\hat{T}) = \sum_{h=1}^{18} N_h^2 \left(1 - \frac{n_h}{N_h}\right) \frac{S_h^2}{n_h}$$
-
-Donde:
-- $N_h$ = Total de actas en el departamento $h$
-- $n_h$ = Actas ya contabilizadas (correctas) en el departamento $h$
-- $S_h^2$ = Varianza de votos por acta dentro del departamento $h$
-- $(1 - n_h/N_h)$ = Corrección de población finita (FPC)
+Tratamos cada departamento como una unidad independiente. Para cada departamento estimamos los votos restantes y los distribuimos proporcionalmente según los patrones observados.
 
 ### Cálculo de Proyecciones
 
@@ -92,16 +84,15 @@ $$\hat{V}_{c,h} = V_{c,h}^{(obs)} + \left(\frac{V_{c,h}^{(obs)}}{V_{total,h}^{(o
 
 Donde $\hat{R}_h$ = votos estimados restantes en el departamento $h$.
 
-### Resultados Estadísticos
+### Resultados
 
 | Métrica | Valor | Interpretación |
 |---------|-------|----------------|
 | Volumen estimado restante | ~25% | Porcentaje del total proyectado que proviene de estimaciones |
-| Margen de error estadístico (95% CI) | ±0.40% | Asumiendo aleatorización dentro de estratos |
 | Margen proyectado entre líderes | ~20,000 votos | Diferencia Asfura - Nasralla |
 | Votos en actas pendientes | ~700,000 | Suficiente para alterar el resultado |
 
-**Conclusión metodológica**: El margen de error estadístico es pequeño, pero *irrelevante* cuando el volumen de datos faltantes (~700K votos) excede ampliamente el margen entre candidatos (~20K votos).
+**Conclusión metodológica**: El volumen de datos faltantes (~700K votos) excede ampliamente el margen entre candidatos (~20K votos). El resultado final depende de cómo voten las actas pendientes.
 
 ---
 

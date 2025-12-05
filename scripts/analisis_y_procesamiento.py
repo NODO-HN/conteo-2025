@@ -6,7 +6,7 @@ Procesa datos del TREP a nivel departamental para:
 1. Calcular estadísticas y proyecciones por departamento
 2. Crear mapa coroplético de votos estimados restantes
 3. Crear gráfico de barras (reportado vs estimado)
-4. Crear visual de proyección nacional con contexto de margen de error
+4. Crear visual de proyección nacional
 """
 
 import json
@@ -754,18 +754,6 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
     else:
         margin_votes = 0.0
 
-    # Simple confidence heuristic
-    if total_est_remaining <= 0:
-        confidence_label = "Alta (no hay votos restantes)"
-    else:
-        ratio = margin_votes / total_est_remaining if total_est_remaining > 0 else 0
-        if ratio >= 1.5:
-            confidence_label = "Alta"
-        elif ratio >= 0.75:
-            confidence_label = "Media"
-        else:
-            confidence_label = "Baja"
-
     # Visual
     logo = load_logo()
 
@@ -808,11 +796,7 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
 
     # Labels showing projected % plus remaining
     total_proj_votes = proj_votes.sum() if proj_votes.sum() > 0 else 1.0
-    moe_pct = (
-        (total_est_remaining / total_proj_votes * 100)
-        if total_proj_votes > 0 and total_est_remaining > 0
-        else 0.0
-    )
+    est_volume_pct = (total_est_remaining / total_proj_votes * 100) if total_proj_votes > 0 else 0.0
 
     for i, (p, r) in enumerate(zip(proj_votes, reported_votes)):
         pct = p / total_proj_votes * 100
@@ -827,13 +811,13 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
             color="#1a5276",
         )
 
-        # Margin-of-error annotation within estimated segment
-        if p > r and moe_pct > 0:
+        # Annotation within estimated segment
+        if p > r and est_volume_pct > 0:
             seg_center = r + (p - r) / 2
             ax.text(
                 seg_center,
                 i,
-                f"Est.\n{moe_pct:.1f}%",
+                "Est.",
                 ha="center",
                 va="center",
                 fontsize=9,
@@ -842,60 +826,11 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
             )
 
     # Summary text
-    # Calculate Statistical MoE (95% CI) using Stratified Random Sampling
-    # We estimate the variance of the projected total for the leader
-    leader_name = top_proj.iloc[0]["candidate"]
-
-    # Re-calculate stats for MoE
-    # Var(Total) = Sum( Var(Dept) )
-    # Var(Dept) approx = (N^2) * (1-f) * (p*(1-p)/(n-1))  [Variance of the ESTIMATED TOTAL in that dept]
-
-    total_variance_votes = 0.0
-    for _, row in dept_stats_df.iterrows():
-        N = row["total_actas"]
-        n = row["correct_actas"]
-        if n <= 1:
-            continue
-        f = n / N
-
-        # Get leader's share in this dept
-        dept_results = results_df[results_df["department"] == row["dept_name"]]
-        leader_dept_votes = dept_results[dept_results["candidate"] == leader_name]["votes"].sum()
-
-        dept_total_valid = row["reported_valid_votes"]
-        if dept_total_valid > 0:
-            p = leader_dept_votes / dept_total_valid
-        else:
-            p = 0.0
-
-        # Variance of the estimated TOTAL votes (reported + remaining)
-        # Since reported is constant, Var(Total) = Var(Remaining)
-        # Var(Remaining) = (Remaining_Actas)^2 * Var(Mean_Votes_Per_Acta)
-        # This is complex. Simplified approach:
-        # Treat the whole department projected total as the estimator.
-        # Var(Total_Dept) = N^2 * (1-f) * (S^2/n)
-        # We approximate S^2 (variance per element) as p(1-p) * (AvgVotesPerActa)^2
-
-        avg_w = row["votes_per_counted_acta"]
-        if avg_w > 0:
-            # Element variance approximation
-            s2 = p * (1 - p) * (avg_w ** 2)
-            var_dept = (N ** 2) * (1 - f) * (s2 / n)
-            total_variance_votes += var_dept
-
-    se_votes = np.sqrt(total_variance_votes)
-    statistical_moe_votes = se_votes * 1.96
-    statistical_moe_pct = (statistical_moe_votes / total_proj_votes * 100) if total_proj_votes > 0 else 0.0
-
-    # Interpretation labels
-    est_volume_pct = (total_est_remaining / total_proj_votes * 100) if total_proj_votes > 0 else 0.0
-
     fig.text(
         0.5,
         0.93,
         f"Volumen estimado restante: {total_est_remaining:,.0f} ({est_volume_pct:.1f}%) | "
-        f"Margen proyectado: {margin_votes:,.0f} votos | "
-        f"IC 95% estadístico: ±{statistical_moe_pct:.2f}%",
+        f"Margen proyectado: {margin_votes:,.0f} votos",
         ha="center",
         va="top",
         fontsize=12,
@@ -907,8 +842,7 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
         0.02,
         0.02,
         "Proyección asume que actas restantes siguen patrones de votación departamentales actuales.\n"
-        f"Área sombreada indica volumen de votos estimados restantes ({est_volume_pct:.1f}% del total).\n"
-        f"Margen de error estadístico (95% de confianza): ±{statistical_moe_pct:.2f}% (aprox. ±{statistical_moe_votes:,.0f} votos).",
+        f"Área rayada indica volumen de votos estimados restantes ({est_volume_pct:.1f}% del total).",
         ha="left",
         va="bottom",
         fontsize=10,

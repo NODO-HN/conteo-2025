@@ -317,7 +317,7 @@ def create_dazzle_projection(results_df, dept_stats_df):
         text_rep.set_path_effects([path_effects.withStroke(linewidth=4, foreground='black', alpha=0.5)])
 
         center_est = row["reported"] + (est_val / 2)
-        est_label = f"Est. {est_val/1000:.0f}K\n(±0.4%)"
+        est_label = f"Est. {est_val/1000:.0f}K"
 
         if est_val < 100000:
             ax.text(row["projected"] + 10000, i, est_label.replace("\n", " "),
@@ -338,8 +338,6 @@ def create_dazzle_projection(results_df, dept_stats_df):
     ax.spines['right'].set_visible(False)
     ax.grid(axis='x', alpha=0.1)
     ax.tick_params(axis='x', labelsize=16)
-
-    moe_pct = 0.40
 
     # Título (Centrado)
     fig.text(0.5, 0.94, "Proyección Nacional",
