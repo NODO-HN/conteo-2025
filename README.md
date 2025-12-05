@@ -1,7 +1,7 @@
 # Honduras 2025: Análisis de Datos Electorales Faltantes
 
 <p align="center">
-  <img src="logo_nodo.png" alt="NODO Laboratorio de Investigación" width="300">
+  <img src="assets/logo_nodo.png" alt="NODO Laboratorio de Investigación" width="300">
 </p>
 
 <p align="center">
