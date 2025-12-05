@@ -1,0 +1,49 @@
+{
+  "resultados": [
+    {
+      "partido": "PARTIDO NACIONAL DE HONDURAS",
+      "candidato": "NASRY JUAN ASFURA ZABLAH",
+      "votos": "83,641",
+      "porcentaje": "44.91"
+    },
+    {
+      "partido": "PARTIDO LIBERAL DE HONDURAS",
+      "candidato": "SALVADOR ALEJANDRO CESAR NASRALLA SALUM",
+      "votos": "53,128",
+      "porcentaje": "28.53"
+    },
+    {
+      "partido": "PARTIDO LIBERTAD Y REFUNDACION",
+      "candidato": "RIXI RAMONA MONCADA GODOY",
+      "votos": "37,643",
+      "porcentaje": "20.21"
+    },
+    {
+      "partido": "PARTIDO INNOVACION Y UNIDAD SOCIAL DEMOCRATA",
+      "candidato": "JORGE NELSON AVILA GUTIERREZ",
+      "votos": "510",
+      "porcentaje": "0.27"
+    },
+    {
+      "partido": "PARTIDO DEMOCRATA CRISTIANO DE HONDURAS",
+      "candidato": "MARIO ENRIQUE RIVERA CALLEJAS",
+      "votos": "212",
+      "porcentaje": "0.11"
+    }
+  ],
+  "estadisticas": {
+    "totalizacion_actas": {
+      "actas_totales": "1,098",
+      "actas_divulgadas": "996"
+    },
+    "distribucion_votos": {
+      "validos": "175,134",
+      "nulos": "7,278",
+      "blancos": "3,812"
+    },
+    "estado_actas_divulgadas": {
+      "actas_correctas": "860",
+      "actas_inconsistentes": "136"
+    }
+  }
+}

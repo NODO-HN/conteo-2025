@@ -1,0 +1,11 @@
+{
+  "enabledMcpjsonServers": [
+    "perplexity",
+    "context7"
+  ],
+  "permissions": {
+    "allow": [
+      "mcp__perplexity__perplexity_search"
+    ]
+  }
+}
