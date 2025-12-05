@@ -52,7 +52,6 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 | Supuesto | Descripción | Impacto si es incorrecto |
 |----------|-------------|--------------------------|
 | **Proporcionalidad departamental** | Las actas faltantes de cada departamento votarán en proporciones similares a las actas ya contadas de ese mismo departamento | Alto: Si las áreas urbanas/rurales dentro de un departamento votan diferente, la proyección tendrá sesgo |
-| **Actas inconsistentes = no información** | Se tratan como datos faltantes completos | Medio: Algunas pueden contener información parcial utilizable |
 | **Datos TREP son representativos** | Los resultados preliminares reflejan la tendencia real | Bajo: El TREP es el sistema oficial de transmisión |
 
 ### Limitaciones Explícitas
