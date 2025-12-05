@@ -1,12 +1,12 @@
 """
-Dec 5 Election Analysis & Visuals (TREP-only)
+Análisis Electoral - Procesamiento de Datos
+Honduras 2025
 
-Uses only data in data/dec_5 to:
-1. Compute department-level stats and projections
-2. Create a choropleth map of estimated remaining votes
-3. Create a stacked bar chart (reported vs estimated remaining) with
-   current vs projected winners by department
-4. Create a simple national projection visual with margin-of-error context
+Procesa datos del TREP a nivel departamental para:
+1. Calcular estadísticas y proyecciones por departamento
+2. Crear mapa coroplético de votos estimados restantes
+3. Crear gráfico de barras (reportado vs estimado)
+4. Crear visual de proyección nacional con contexto de margen de error
 """
 
 import json
@@ -21,15 +21,16 @@ from matplotlib.collections import PatchCollection
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Polygon
 
-# Global font configuration: use Times New Roman across all visuals
+# Configuración global de fuentes
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.serif"] = ["Times New Roman", "Times", "DejaVu Serif"]
 
 
+# Rutas actualizadas para la nueva estructura
 DATA_DIR = Path("data/dec_5")
 TABLES_DIR = DATA_DIR / "tables"
 VIZ_DIR = DATA_DIR / "viz"
-GEOJSON_PATH = DATA_DIR / "geoBoundaries-HND-ADM1.geojson"
+GEOJSON_PATH = Path("assets") / "geoBoundaries-HND-ADM1.geojson"
 ROOT_DIR = Path(".")
 
 
@@ -40,11 +41,11 @@ def ensure_dirs():
 
 def load_dec5_results():
     """
-    Load all department-level JSON results from data/dec_5.
+    Carga todos los resultados JSON a nivel departamental desde data/dec_5.
 
     Returns:
-        results_df: rows = (department, party, candidate, votes)
-        dept_stats_df: rows = per-department acta and vote statistics
+        results_df: filas = (department, party, candidate, votes)
+        dept_stats_df: filas = estadísticas de actas y votos por departamento
     """
     json_files = sorted(DATA_DIR.glob("HN.PRESIDENTE.*.json"))
 
@@ -182,7 +183,7 @@ def load_dec5_results():
 
 def summarize_departments(results_df: pd.DataFrame, dept_stats_df: pd.DataFrame):
     """
-    Derive department-level winners and projections.
+    Deriva ganadores y proyecciones a nivel departamental.
 
     Adds:
         reported_total_valid_votes
@@ -288,7 +289,7 @@ def summarize_departments(results_df: pd.DataFrame, dept_stats_df: pd.DataFrame)
 
 def candidate_short_label(name: str) -> str:
     """
-    Use last name as label where possible.
+    Usa el apellido como etiqueta cuando sea posible.
     """
     if not isinstance(name, str) or not name:
         return ""
@@ -298,7 +299,7 @@ def candidate_short_label(name: str) -> str:
 
 def candidate_display_name(name: str) -> str:
     """
-    Display labels for candidates in projection graphs.
+    Nombre para mostrar en gráficos de proyección.
     """
     if not isinstance(name, str) or not name:
         return ""
@@ -315,11 +316,11 @@ def candidate_display_name(name: str) -> str:
 
 def candidate_color(name: str) -> str:
     """
-    Color map:
-      - Asfura: blue
-      - Nasralla: red
+    Mapa de colores:
+      - Asfura: azul
+      - Nasralla: rojo
       - Moncada: crimson
-      - Others: gray
+      - Others: gris
     """
     if not isinstance(name, str):
         return "#555555"
@@ -335,14 +336,14 @@ def candidate_color(name: str) -> str:
 
 
 def save_department_table(dept_stats_df: pd.DataFrame):
-    out_path = TABLES_DIR / "dec5_department_stats.csv"
+    out_path = TABLES_DIR / "estadisticas_departamentales.csv"
     dept_stats_df.to_csv(out_path, index=False)
-    print(f"Saved department stats: {out_path}")
+    print(f"Tabla guardada: {out_path}")
 
 
 def load_geojson():
     if not GEOJSON_PATH.exists():
-        raise FileNotFoundError(f"GeoJSON not found at {GEOJSON_PATH}")
+        raise FileNotFoundError(f"GeoJSON no encontrado en {GEOJSON_PATH}")
     with open(GEOJSON_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -389,12 +390,12 @@ def add_remaining_votes_to_geojson(geojson, dept_stats_df: pd.DataFrame):
 
 
 def load_logo():
-    logo_path = ROOT_DIR / "logo_nodo.png"
+    logo_path = Path("assets") / "logo_nodo.png"
     if logo_path.exists():
         logo = mpimg.imread(logo_path)
-        print(f"Logo loaded for visuals: {logo.shape[1]}x{logo.shape[0]} pixels")
+        print(f"Logo cargado: {logo.shape[1]}x{logo.shape[0]} pixels")
         return logo
-    print("Warning: logo_nodo.png not found in root; visuals will omit logo.")
+    print("Advertencia: logo_nodo.png no encontrado en assets/; visuales omitirán logo.")
     return None
 
 
@@ -406,7 +407,7 @@ def professional_blue_cmap():
 
 
 def create_remaining_votes_map(dept_stats_df: pd.DataFrame):
-    print("Creating choropleth: Remaining Votes Origin...")
+    print("Creando mapa coroplético: Origen de votos restantes...")
 
     geojson = load_geojson()
     add_remaining_votes_to_geojson(geojson, dept_stats_df)
@@ -452,7 +453,7 @@ def create_remaining_votes_map(dept_stats_df: pd.DataFrame):
         p, ax=ax, orientation="horizontal", pad=0.10, aspect=40, shrink=0.7
     )
     cbar.set_label(
-        "Estimated valid votes in unreported actas + actas flagged as inconsistent.",
+        "Votos válidos estimados en actas no reportadas + marcadas como inconsistentes.",
         fontsize=18,
         fontweight="600",
         labelpad=18,
@@ -522,7 +523,7 @@ def create_remaining_votes_map(dept_stats_df: pd.DataFrame):
     fig.text(
         0.05,
         bottom_y,
-        "Report generated 2025-12-05, 1:00 pm.",
+        "Reporte generado 2025-12-05, 1:00 pm.",
         ha="left",
         va="bottom",
         fontsize=11,
@@ -544,15 +545,15 @@ def create_remaining_votes_map(dept_stats_df: pd.DataFrame):
         if "Nodo | Honduras 2025" in text_obj.get_text():
             text_obj.set_visible(False)
 
-    out_path = VIZ_DIR / "dec5_mapa_remaining_votes.png"
+    out_path = VIZ_DIR / "mapa_votos_restantes.png"
     plt.tight_layout(rect=[0, 0.08, 1, 0.98])
     plt.savefig(out_path, dpi=400, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print(f"Saved choropleth: {out_path}")
+    print(f"Mapa guardado: {out_path}")
 
 
 def create_dept_bars_with_winner_table(dept_stats_df: pd.DataFrame):
-    print("Creating stacked department bar chart...")
+    print("Creando gráfico de barras departamentales apiladas...")
 
     logo = load_logo()
 
@@ -582,7 +583,7 @@ def create_dept_bars_with_winner_table(dept_stats_df: pd.DataFrame):
         alpha=0.85,
         edgecolor="#2874a6",
         linewidth=0.8,
-        label="Reported votes (valid)",
+        label="Votos reportados (válidos)",
     )
     ax_bar.barh(
         y_pos,
@@ -592,7 +593,7 @@ def create_dept_bars_with_winner_table(dept_stats_df: pd.DataFrame):
         alpha=0.85,
         edgecolor="#1a5276",
         linewidth=0.8,
-        label="Estimated remaining votes (unreported + inconsistent)",
+        label="Votos estimados restantes (no reportados + inconsistentes)",
     )
 
     ax_bar.set_yticks(y_pos)
@@ -600,7 +601,7 @@ def create_dept_bars_with_winner_table(dept_stats_df: pd.DataFrame):
 
     # No explicit x-axis label; bars + legend are enough
     ax_bar.set_title(
-        "Reported vs Estimated Remaining Votes by Department\nHonduras 2025",
+        "Votos Reportados vs Estimados Restantes por Departamento\nHonduras 2025",
         fontsize=18,
         fontweight="700",
         pad=20,
@@ -652,8 +653,8 @@ def create_dept_bars_with_winner_table(dept_stats_df: pd.DataFrame):
     fig.text(
         0.02,
         0.02,
-        "Estimate based on unreported actas and actas flagged as inconsistent.\n"
-        "Report generated 2025-12-05, 1:00 pm.",
+        "Estimación basada en actas no reportadas y actas marcadas como inconsistentes.\n"
+        "Reporte generado 2025-12-05, 1:00 pm.",
         ha="left",
         va="bottom",
         fontsize=10,
@@ -686,15 +687,15 @@ def create_dept_bars_with_winner_table(dept_stats_df: pd.DataFrame):
         if "Nodo | Honduras 2025" in text_obj.get_text():
             text_obj.set_visible(False)
 
-    out_path = VIZ_DIR / "dec5_dept_reported_vs_remaining.png"
+    out_path = VIZ_DIR / "barras_reportado_vs_restante.png"
     plt.tight_layout(rect=[0, 0.04, 1, 0.96])
     plt.savefig(out_path, dpi=400, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print(f"Saved department bar chart: {out_path}")
+    print(f"Gráfico de barras guardado: {out_path}")
 
 
 def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: pd.DataFrame):
-    print("Creating national projection visual...")
+    print("Creando visual de proyección nacional...")
 
     # Aggregate national reported votes per candidate
     nat = (
@@ -755,15 +756,15 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
 
     # Simple confidence heuristic
     if total_est_remaining <= 0:
-        confidence_label = "High (no remaining votes)"
+        confidence_label = "Alta (no hay votos restantes)"
     else:
         ratio = margin_votes / total_est_remaining if total_est_remaining > 0 else 0
         if ratio >= 1.5:
-            confidence_label = "High"
+            confidence_label = "Alta"
         elif ratio >= 0.75:
-            confidence_label = "Medium"
+            confidence_label = "Media"
         else:
-            confidence_label = "Low"
+            confidence_label = "Baja"
 
     # Visual
     logo = load_logo()
@@ -783,9 +784,9 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
     ax.set_yticks(y_pos)
     ax.set_yticklabels(top_proj["short_label"].values, fontsize=12)
 
-    ax.set_xlabel("Votes (valid)", fontsize=13, fontweight="700")
+    ax.set_xlabel("Votos (válidos)", fontsize=13, fontweight="700")
     ax.set_title(
-        "Projected National Results (Valid Votes)\nHonduras 2025",
+        "Resultados Nacionales Proyectados (Votos Válidos)\nHonduras 2025",
         fontsize=20,
         fontweight="700",
         pad=20,
@@ -844,11 +845,11 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
     # Calculate Statistical MoE (95% CI) using Stratified Random Sampling
     # We estimate the variance of the projected total for the leader
     leader_name = top_proj.iloc[0]["candidate"]
-    
+
     # Re-calculate stats for MoE
     # Var(Total) = Sum( Var(Dept) )
     # Var(Dept) approx = (N^2) * (1-f) * (p*(1-p)/(n-1))  [Variance of the ESTIMATED TOTAL in that dept]
-    
+
     total_variance_votes = 0.0
     for _, row in dept_stats_df.iterrows():
         N = row["total_actas"]
@@ -856,17 +857,17 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
         if n <= 1:
             continue
         f = n / N
-        
+
         # Get leader's share in this dept
         dept_results = results_df[results_df["department"] == row["dept_name"]]
         leader_dept_votes = dept_results[dept_results["candidate"] == leader_name]["votes"].sum()
-        
+
         dept_total_valid = row["reported_valid_votes"]
         if dept_total_valid > 0:
             p = leader_dept_votes / dept_total_valid
         else:
             p = 0.0
-            
+
         # Variance of the estimated TOTAL votes (reported + remaining)
         # Since reported is constant, Var(Total) = Var(Remaining)
         # Var(Remaining) = (Remaining_Actas)^2 * Var(Mean_Votes_Per_Acta)
@@ -874,27 +875,27 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
         # Treat the whole department projected total as the estimator.
         # Var(Total_Dept) = N^2 * (1-f) * (S^2/n)
         # We approximate S^2 (variance per element) as p(1-p) * (AvgVotesPerActa)^2
-        
+
         avg_w = row["votes_per_counted_acta"]
         if avg_w > 0:
             # Element variance approximation
             s2 = p * (1 - p) * (avg_w ** 2)
             var_dept = (N ** 2) * (1 - f) * (s2 / n)
             total_variance_votes += var_dept
-            
+
     se_votes = np.sqrt(total_variance_votes)
     statistical_moe_votes = se_votes * 1.96
     statistical_moe_pct = (statistical_moe_votes / total_proj_votes * 100) if total_proj_votes > 0 else 0.0
 
     # Interpretation labels
     est_volume_pct = (total_est_remaining / total_proj_votes * 100) if total_proj_votes > 0 else 0.0
-    
+
     fig.text(
         0.5,
         0.93,
-        f"Est. Remaining Volume: {total_est_remaining:,.0f} ({est_volume_pct:.1f}%) | "
-        f"Projected Margin: {margin_votes:,.0f} votes | "
-        f"Statistical 95% CI: ±{statistical_moe_pct:.2f}%",
+        f"Volumen estimado restante: {total_est_remaining:,.0f} ({est_volume_pct:.1f}%) | "
+        f"Margen proyectado: {margin_votes:,.0f} votos | "
+        f"IC 95% estadístico: ±{statistical_moe_pct:.2f}%",
         ha="center",
         va="top",
         fontsize=12,
@@ -905,9 +906,9 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
     fig.text(
         0.02,
         0.02,
-        "Projection assumes remaining actas follow current departmental voting patterns.\n"
-        f"Shaded area indicates volume of estimated remaining votes ({est_volume_pct:.1f}% of total).\n"
-        f"Statistical Margin of Error (95% Confidence): ±{statistical_moe_pct:.2f}% (approx. ±{statistical_moe_votes:,.0f} votes).",
+        "Proyección asume que actas restantes siguen patrones de votación departamentales actuales.\n"
+        f"Área sombreada indica volumen de votos estimados restantes ({est_volume_pct:.1f}% del total).\n"
+        f"Margen de error estadístico (95% de confianza): ±{statistical_moe_pct:.2f}% (aprox. ±{statistical_moe_votes:,.0f} votos).",
         ha="left",
         va="bottom",
         fontsize=10,
@@ -940,18 +941,18 @@ def create_national_projection_visual(results_df: pd.DataFrame, dept_stats_df: p
         if "Nodo | Honduras 2025" in text_obj.get_text():
             text_obj.set_visible(False)
 
-    out_path = VIZ_DIR / "dec5_national_projection.png"
+    out_path = VIZ_DIR / "proyeccion_nacional.png"
     plt.tight_layout(rect=[0, 0.05, 1, 0.9])
     plt.savefig(out_path, dpi=400, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print(f"Saved national projection visual: {out_path}")
+    print(f"Visual de proyección nacional guardado: {out_path}")
 
 
 def main():
     ensure_dirs()
 
     print("=" * 80)
-    print("DEC 5 ELECTION ANALYSIS (TREP-ONLY, DEPARTMENT LEVEL)")
+    print("ANÁLISIS ELECTORAL DIC 5 (SOLO TREP, NIVEL DEPARTAMENTAL)")
     print("=" * 80)
     print()
 
@@ -966,7 +967,7 @@ def main():
 
     print()
     print("=" * 80)
-    print("DEC 5 ANALYSIS COMPLETE")
+    print("ANÁLISIS DIC 5 COMPLETO")
     print("=" * 80)
 
 

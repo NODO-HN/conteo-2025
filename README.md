@@ -27,19 +27,19 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 
 ### Mapa: ¿Dónde están los votos faltantes?
 
-![Mapa de Votos Faltantes](data/dec_5/gemini_viz/dazzle_map_remaining.png)
+![Mapa de Votos Faltantes](data/dec_5/visualizaciones/mapa_votos_faltantes.png)
 
 *Volumen estimado de votos válidos en actas no reportadas + inconsistentes por departamento.*
 
 ### Barras Departamentales: Reportado vs. Estimado
 
-![Barras Departamentales](data/dec_5/gemini_viz/dazzle_dept_bars.png)
+![Barras Departamentales](data/dec_5/visualizaciones/barras_departamentales.png)
 
 *Azul sólido: votos ya contabilizados. Naranja rayado: estimación de votos pendientes.*
 
 ### Proyección Nacional
 
-![Proyección Nacional](data/dec_5/gemini_viz/dazzle_national_projection.png)
+![Proyección Nacional](data/dec_5/visualizaciones/proyeccion_nacional.png)
 
 *Proyección asumiendo que las actas restantes siguen los patrones departamentales observados.*
 
@@ -149,10 +149,10 @@ conteo-2025/
 #### Paso 3: Ejecutar el Análisis
 
 ```bash
-python dec5_dazzle_viz.py
+python scripts/generar_visualizaciones.py
 ```
 
-Las visualizaciones se generarán en `data/dec_5/gemini_viz/`.
+Las visualizaciones se generarán en `data/dec_5/visualizaciones/`.
 
 ---
 
@@ -190,12 +190,13 @@ Este análisis busca aportar **claridad basada en datos** en un momento de alta 
 
 | Archivo | Descripción |
 |---------|-------------|
-| `dec5_analysis_and_visuals.py` | Carga y procesamiento de datos, funciones de visualización base |
-| `dec5_dazzle_viz.py` | Generación de visualizaciones de alta calidad |
-| `METODOLOGIA.md` | Documentación detallada del enfoque estadístico |
+| `scripts/analisis_y_procesamiento.py` | Carga y procesamiento de datos, funciones de análisis base |
+| `scripts/generar_visualizaciones.py` | Generación de visualizaciones de alta calidad |
+| `Metodología.md` | Documentación detallada del enfoque estadístico |
 | `data/dec_5/*.json` | Datos crudos del CNE por departamento |
 | `data/dec_5/departamentos_actas_progress.csv` | Progreso de actas (fuente: tabla CNE) |
-| `data/dec_5/geoBoundaries-HND-ADM1.geojson` | Límites geográficos de departamentos |
+| `assets/geoBoundaries-HND-ADM1.geojson` | Límites geográficos de departamentos |
+| `assets/logo_nodo.png` | Logo de NODO para visualizaciones |
 
 ---
 
