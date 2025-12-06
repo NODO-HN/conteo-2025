@@ -56,7 +56,7 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 
 ### Limitaciones Explícitas
 
-1. **El riesgo principal es el sesgo sistemático, no el error de muestreo.** Si las actas ya contadas no son representativas de las actas faltantes + las que tienen inconsistencias, la proyección será incorrecta. Sin embargo, las actas contadas y válidas ya superan el 75%, haciendo la muestra altamente representativa.
+1. **El riesgo principal es el sesgo sistemático, no el error de muestreo.** Es decir, que las actas faltantes no tengan el mismo comportamiento de las actas contadas. En una muestra del 75% de la data, este escenario es altamente improbable.
 
 2. **No hay validación histórica.** Este análisis no ha sido probado contra elecciones anteriores donde se conocen los resultados finales.
 
