@@ -19,7 +19,7 @@ Este repositorio contiene un análisis transparente y reproducible de los result
 2. **Visualizar la distribución geográfica**: ¿De dónde provienen los votos faltantes?
 3. **Proyectar resultados bajo supuestos explícitos**: ¿Qué pasaría si las actas restantes siguen los patrones observados?
 
-**Hallazgo clave**: Al momento de este análisis (5 de diciembre 2025, 6:00 pm), aproximadamente **25% del electorado** está representado por actas no reportadas o inconsistentes. El margen entre los dos candidatos líderes es de ~20,000 votos y el volumen de votos estimados en actas pendientes es de ~700,000.
+**Hallazgo clave**: Al momento de este análisis (5 de diciembre 2025, 6:00 pm), aproximadamente **25% del electorado** está representado por actas no reportadas o inconsistentes. El margen entre los dos candidatos líderes es de ~20,000 votos y el volumen de votos estimados en actas pendientes es de ~930,000.
 
 ---
 
@@ -90,9 +90,9 @@ Donde $\hat{R}_h$ = votos estimados restantes en el departamento $h$.
 |---------|-------|----------------|
 | Volumen estimado restante | ~25% | Porcentaje del total proyectado que proviene de estimaciones |
 | Margen proyectado entre líderes | ~20,000 votos | Diferencia Asfura - Nasralla |
-| Votos en actas pendientes | ~700,000 | Suficiente para alterar el resultado |
+| Votos en actas pendientes | ~930,000 | Suficiente para alterar el resultado |
 
-**Conclusión metodológica**: El volumen de datos faltantes (~700K votos) excede ampliamente el margen entre candidatos (~20K votos). El resultado final depende de cómo voten las actas pendientes.
+**Conclusión metodológica**: El volumen de datos faltantes (~930K votos) excede ampliamente el margen entre candidatos (~20K votos). El resultado final depende de cómo voten las actas pendientes.
 
 ---
 
